@@ -63,8 +63,12 @@ function getMaxNumber(a, b, c) {
  * {x: 1, y: 1}, {x: 2, y: 8} => false
  * {x: 1, y: 1}, {x: 2, y: 8} => false
  */
-function canQueenCaptureKing(/* queen, king */) {
-  throw new Error('Not implemented');
+function canQueenCaptureKing(queen, king) {
+  return (
+    queen.x === king.x ||
+    queen.y === king.y ||
+    Math.abs(queen.x - king.x) === Math.abs(queen.y - king.y)
+  );
 }
 
 /**
@@ -334,8 +338,22 @@ function getSpiralMatrix(/* size */) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix(/* matrix */) {
-  throw new Error('Not implemented');
+function rotateMatrix(matrix) {
+  const matrixc = matrix;
+  const size = matrixc.length;
+  for (let layer = 0; layer < size / 2; layer += 1) {
+    const first = layer;
+    const last = size - 1 - layer;
+    for (let i = first; i < last; i += 1) {
+      const offset = i - first;
+      const top = matrixc[first][i];
+      matrixc[first][i] = matrixc[last - offset][first];
+      matrixc[last - offset][first] = matrixc[last][last - offset];
+      matrixc[last][last - offset] = matrixc[i][last];
+      matrixc[i][last] = top;
+    }
+  }
+  return matrixc;
 }
 
 /**
@@ -352,8 +370,45 @@ function rotateMatrix(/* matrix */) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+function sortByAsc(arr) {
+  function quickSort(input, startIndex, endIndex) {
+    const arrayToSort = input;
+    let lowerIndex = startIndex;
+    let upperIndex = endIndex - 1;
+    const pivotElement = arrayToSort[endIndex];
+
+    function swapArrayElements(indexOne, indexTwo) {
+      const temporary = arrayToSort[indexOne];
+      arrayToSort[indexOne] = arrayToSort[indexTwo];
+      arrayToSort[indexTwo] = temporary;
+    }
+
+    if (startIndex >= endIndex) {
+      return;
+    }
+
+    while (lowerIndex <= upperIndex) {
+      while (
+        lowerIndex <= upperIndex &&
+        arrayToSort[lowerIndex] <= pivotElement
+      ) {
+        lowerIndex += 1;
+      }
+      while (
+        lowerIndex <= upperIndex &&
+        arrayToSort[upperIndex] >= pivotElement
+      ) {
+        upperIndex -= 1;
+      }
+      if (lowerIndex < upperIndex) {
+        swapArrayElements(lowerIndex, upperIndex);
+      }
+    }
+    swapArrayElements(lowerIndex, endIndex);
+    quickSort(arrayToSort, startIndex, lowerIndex - 1);
+    quickSort(arrayToSort, lowerIndex + 1, endIndex);
+  }
+  quickSort(arr, 0, arr.length - 1);
 }
 
 /**
@@ -373,8 +428,37 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  let shuffledString = str;
+  let iterationCount = 1;
+
+  function shuffle(input) {
+    let evenIndexedCharacters = '';
+    let oddIndexedCharacters = '';
+    for (let index = 0; index < input.length - 1; index += 2) {
+      evenIndexedCharacters += input[index];
+      oddIndexedCharacters += input[index + 1];
+    }
+    if (input.length % 2 !== 0)
+      evenIndexedCharacters += input[input.length - 1];
+    return evenIndexedCharacters + oddIndexedCharacters;
+  }
+
+  while (iterationCount <= iterations) {
+    shuffledString = shuffle(shuffledString);
+    if (str === shuffledString) {
+      for (
+        let remainingIterations = 0;
+        remainingIterations < iterations % iterationCount;
+        remainingIterations += 1
+      ) {
+        shuffledString = shuffle(shuffledString);
+      }
+      return shuffledString;
+    }
+    iterationCount += 1;
+  }
+  return shuffledString;
 }
 
 /**
@@ -394,8 +478,38 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const digitsArray = [];
+  let n = number;
+  let digit = n % 10;
+  n = Math.floor(n / 10);
+  digitsArray.push(digit);
+
+  while (n && n % 10 >= digit) {
+    digit = n % 10;
+    digitsArray.push(digit);
+    n = Math.floor(n / 10);
+  }
+
+  if (n === 0) return number;
+
+  const digitToSwap = n % 10;
+  n = Math.floor(n / 10);
+  let index = 0;
+
+  while (digitToSwap >= digitsArray[index]) {
+    index += 1;
+  }
+
+  const temporary = digitsArray[index];
+  digitsArray[index] = digitToSwap;
+  n = n * 10 + temporary;
+
+  for (let arrayIndex = 0; arrayIndex < digitsArray.length; arrayIndex += 1) {
+    n = n * 10 + digitsArray[arrayIndex];
+  }
+
+  return n;
 }
 
 module.exports = {
